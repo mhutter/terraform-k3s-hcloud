@@ -1,0 +1,2 @@
+provider "ct" {}
+provider "hcloud" {}
