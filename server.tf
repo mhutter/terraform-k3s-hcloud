@@ -1,5 +1,9 @@
-# Server Firewall
-# https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/firewall
+locals {
+  server_labels = merge(local.common_labels, {
+    role = "server"
+  })
+}
+
 resource "hcloud_firewall" "server" {
   name = "k3s-server"
 
@@ -15,35 +19,28 @@ resource "hcloud_firewall" "server" {
     port       = "22"
     source_ips = var.admin_cidrs
   }
+
+  rule {
+    direction  = "in"
+    protocol   = "tcp"
+    port       = "6443"
+    source_ips = var.admin_cidrs
+  }
+
+  labels = local.server_labels
 }
 
 # Transform Butane to Ignition
 data "ct_config" "server" {
-  content = yamlencode({
-    variant = "fcos"
-    version = "1.5.0"
-
-    storage = {
-      files = [{
-        path = "/etc/sysctl.d/90-ip-forward.conf"
-        contents = {
-          inline = "net.ipv4.ip_forward = 1"
-        }
-      }]
-    }
-    systemd = {
-      units = [{
-        name    = "nat-masquerading.service"
-        enabled = true
-        contents = templatefile("${path.module}/bootstrap/nat-masquerading.service", {
-          ip_range = hcloud_network_subnet.k3s.ip_range
-        })
-      }]
-    }
+  strict = true
+  content = templatefile("${path.module}/bootstrap/server.bu", {
+    agent_token = random_password.agent_token.result
+    ip_range    = hcloud_network_subnet.k3s.ip_range
+    node_ip     = local.server_ip
   })
-
-  strict   = true
-  snippets = local.common_butane_snippets
+  snippets = [templatefile("${path.module}/bootstrap/common.bu", {
+    role = "server"
+  })]
 }
 
 # https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/server
@@ -59,14 +56,12 @@ resource "hcloud_server" "server" {
     ipv4_enabled = true
     ipv6_enabled = true
   }
-
+  network {
+    network_id = hcloud_network.internal.id
+    ip         = local.server_ip
+  }
   firewall_ids = [hcloud_firewall.server.id]
 
+  labels     = local.server_labels
   depends_on = [hcloud_network_subnet.k3s]
-}
-
-resource "hcloud_server_network" "server" {
-  ip         = local.server_ip
-  network_id = hcloud_network.internal.id
-  server_id  = hcloud_server.server.id
 }

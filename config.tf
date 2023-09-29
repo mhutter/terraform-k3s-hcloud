@@ -30,4 +30,16 @@ locals {
 
   # Networking
   server_ip = cidrhost(hcloud_network_subnet.k3s.ip_range, var.ip_offsets.server)
+
+  env = {
+    dev = {
+      internal_network = "10.1.0.0/24"
+    }
+    prod = {
+      internal_network = "10.0.0.0/24"
+    }
+  }
+
+  // IP range for the internal network
+  internal_network = local.env[terraform.workspace].internal_network
 }

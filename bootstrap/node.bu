@@ -1,24 +1,5 @@
 variant: fcos
 version: 1.5.0
-
-systemd:
-  units:
-    # Configure default gateway
-    - name: set-default-gateway.service
-      contents: |
-        [Unit]
-        Description=Set default gateway
-        After=network-online.target
-        Wants=network-online.target
-
-        [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        ExecStart=/usr/sbin/ip route add default via 10.0.0.1
-
-        [Install]
-        WantedBy=multi-user.target
-
 storage:
   files:
     # Manually configure Hetzner DNS servers
@@ -29,3 +10,30 @@ storage:
         inline: |
           [Resolve]
           DNS=185.12.64.2 185.12.64.1
+
+    # K3s config
+    - path: /etc/rancher/k3s/config.yaml
+      contents:
+        inline: |
+          server: "https://${server}:6443"
+          token: "${token}"
+          kubelet-arg: "config=/etc/rancher/k3s/kubelet.config"
+          node-ip: "${node_ip}"
+
+systemd:
+  units:
+    # Configure default gateway
+    - name: set-default-gateway.service
+      contents: |
+        [Unit]
+        Description=Set default gateway
+        After=network.target
+        Wants=network.target
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/sbin/ip route add default via ${gateway_ip}
+
+        [Install]
+        WantedBy=network-online.target

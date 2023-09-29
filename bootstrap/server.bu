@@ -1,0 +1,71 @@
+variant: fcos
+version: 1.5.0
+
+storage:
+  files:
+    # Enable IP forwarding
+    - path: /etc/sysctl.d/90-ip-forward.conf
+      contents:
+        inline: net.ipv4.ip_forward = 1
+
+    - path: /etc/rancher/k3s/config.yaml
+      mode: 0600
+      contents:
+        inline: |
+          kubelet-arg: "config=/etc/rancher/k3s/kubelet.config"
+          agent-token: "${agent_token}"
+
+          # Server configuration
+          advertise-address: "${node_ip}"
+          node-ip: "${node_ip}"
+
+          # Cluster configuration
+          secrets-encryption: true
+          cluster-cidr: "10.42.0.0/16"
+          service-cidr: "10.43.0.0/16"
+
+          # Use Cilium
+          flannel-backend: none
+          disable-network-policy: true
+
+          # Disable unneeded features
+          disable-helm-controller: true
+          disable-kube-proxy: true
+          disable: [servicelb, traefik, local-storage]
+
+systemd:
+  units:
+    - name: nat-masquerading.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Set up NAT rules
+        After=network-online.target
+        Wants=network-online.target
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/sbin/iptables -t nat -A POSTROUTING -s '${ip_range}' -o enp1s0 -j MASQUERADE
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: k3s-cfg-tls-san.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Configure K3s TLS SAN
+        Wants=network-online.target
+        After=network-online.target
+        Before=k3s.service
+        ConditionPathExists=|!/etc/rancher/k3s/config.yaml.d/tls-san.yaml
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=-mkdir -p /etc/rancher/k3s/config.yaml.d/
+        ExecStart=/bin/sh -c 'echo "tls-san:" $(ip -4 -j a show dev enp1s0 | jq "[.[0].addr_info[].local]") > /etc/rancher/k3s/config.yaml.d/tls-san.yaml'
+
+        [Install]
+        WantedBy=multi-user.target

@@ -13,6 +13,7 @@
         {
           packages = with pkgs; [
             butane
+            cilium-cli
             hcloud
             terraform
           ];
