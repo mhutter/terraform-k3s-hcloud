@@ -18,6 +18,7 @@ storage:
           # Server configuration
           advertise-address: "${node_ip}"
           node-ip: "${node_ip}"
+          node-taint: "node-role.kubernetes.io/control-plane:NoSchedule"
 
           # Cluster configuration
           secrets-encryption: true
