@@ -7,12 +7,7 @@ locals {
 }
 
 # SSH public key
-# https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/ssh_key
-resource "hcloud_ssh_key" "default" {
-  name       = "default"
-  public_key = local.ssh_key
-  labels     = local.common_labels
-}
+data "hcloud_ssh_keys" "all" {}
 
 data "hcloud_image" "coreos" {
   most_recent       = true

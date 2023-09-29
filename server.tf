@@ -49,7 +49,7 @@ resource "hcloud_server" "server" {
   image       = data.hcloud_image.coreos.id
   server_type = "cax11"
   location    = "fsn1"
-  ssh_keys    = [hcloud_ssh_key.default.id]
+  ssh_keys    = data.hcloud_ssh_keys.all.*.id
   user_data   = data.ct_config.server.rendered
 
   public_net {

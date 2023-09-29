@@ -46,7 +46,6 @@ resource "random_pet" "node_name" {
 
   keepers = {
     image_id        = data.hcloud_image.coreos.id
-    ssh_key         = hcloud_ssh_key.default.fingerprint
     user_data       = md5(data.ct_config.node[count.index].rendered)
     placement_group = hcloud_placement_group.nodes.id
     network         = hcloud_network.internal.id
@@ -61,7 +60,7 @@ resource "hcloud_server" "node" {
   image       = data.hcloud_image.coreos.id
   server_type = "cax11"
   location    = "fsn1"
-  ssh_keys    = [hcloud_ssh_key.default.id]
+  ssh_keys    = data.hcloud_ssh_keys.all.*.id
   user_data   = data.ct_config.node[count.index].rendered
   labels      = local.node_labels
 
