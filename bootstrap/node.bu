@@ -2,10 +2,25 @@ variant: fcos
 version: 1.5.0
 storage:
   files:
+    # Manually configure networking
+    - path: /etc/NetworkManager/system-connections/internal.nmconnection
+      overwrite: true
+      contents:
+        inline: |
+          [connection]
+          id=internal
+          type=ethernet
+          autoconnect-priority=-999
+          interface-name=enp7s0
+
+          [ipv4]
+          method=manual
+          address1=${node_ip}/24,${gateway_ip}
+          dns=185.12.64.2;185.12.64.1;
+
     # Manually configure Hetzner DNS servers
     # Since we don't have public IPv4 addresses, we won't get them via DHCP
     - path: /etc/systemd/resolved.conf.d/dns.conf
-      overwrite: true
       contents:
         inline: |
           [Resolve]
@@ -19,21 +34,3 @@ storage:
           token: "${token}"
           kubelet-arg: "config=/etc/rancher/k3s/kubelet.config"
           node-ip: "${node_ip}"
-
-systemd:
-  units:
-    # Configure default gateway
-    - name: set-default-gateway.service
-      contents: |
-        [Unit]
-        Description=Set default gateway
-        After=network.target
-        Wants=network.target
-
-        [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        ExecStart=/usr/sbin/ip route add default via ${gateway_ip}
-
-        [Install]
-        WantedBy=network-online.target
