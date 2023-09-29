@@ -20,8 +20,9 @@ variable "ip_offsets" {
 }
 
 variable "node_count" {
-  type    = number
-  default = 1
+  description = "Number of worker nodes"
+  type        = number
+  default     = 1
 }
 
 locals {
