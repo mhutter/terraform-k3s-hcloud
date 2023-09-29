@@ -2,6 +2,18 @@ variant: fcos
 version: 1.5.0
 storage:
   files:
+    # FIXME: This just crashes zincati
+    # Configure Zincati update strategy
+    # see: https://coreos.github.io/zincati/usage/updates-strategy/
+    # Choose "periodic" strategy but don't define any window, to completely
+    # prevent reboots triggered by Zincati. Instead we will later use kured or
+    # similar to orchestrate reboots
+    - path: /etc/zincati/config.d/55-update-strategy.toml
+      contents:
+        inline: |
+          [updates]
+          strategy = "periodic"
+
     # Manually configure networking
     - path: /etc/NetworkManager/system-connections/internal.nmconnection
       overwrite: true
@@ -16,7 +28,6 @@ storage:
           [ipv4]
           method=manual
           address1=${node_ip}/24,${gateway_ip}
-          dns=185.12.64.2;185.12.64.1;
 
     # Manually configure Hetzner DNS servers
     # Since we don't have public IPv4 addresses, we won't get them via DHCP
