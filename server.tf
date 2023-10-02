@@ -57,7 +57,7 @@ resource "hcloud_server" "server" {
     ipv6_enabled = true
   }
   network {
-    network_id = hcloud_network.internal.id
+    network_id = hcloud_network.k3s.id
     ip         = local.server_ip
   }
   firewall_ids = [hcloud_firewall.server.id]

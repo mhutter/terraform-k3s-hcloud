@@ -48,7 +48,7 @@ resource "random_pet" "node_name" {
     image_id        = data.hcloud_image.coreos.id
     user_data       = md5(data.ct_config.node[count.index].rendered)
     placement_group = hcloud_placement_group.nodes.id
-    network         = hcloud_network.internal.id
+    network         = hcloud_network.k3s.id
   }
 }
 
@@ -72,7 +72,7 @@ resource "hcloud_server" "node" {
   }
 
   network {
-    network_id = hcloud_network.internal.id
+    network_id = hcloud_network.k3s.id
     ip         = local.node_ips[count.index]
   }
 
