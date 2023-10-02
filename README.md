@@ -26,7 +26,6 @@ export KUBECONFIG="${PWD}/.kubeconfig"
 
 # Used for SSH & Kubernetes API access to the server
 export TF_VAR_admin_cidrs='["1.2.3.4/32"]'
-export TF_VAR_node_count='3'
 
 # Terraform State
 export AWS_ACCESS_KEY_ID=''

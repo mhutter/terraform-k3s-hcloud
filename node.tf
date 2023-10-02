@@ -1,5 +1,5 @@
 locals {
-  node_ips = [for i in range(var.node_count) : cidrhost(hcloud_network_subnet.k3s.ip_range, var.ip_offsets.nodes + i)]
+  node_ips = [for i in range(local.node_count) : cidrhost(hcloud_network_subnet.k3s.ip_range, var.ip_offsets.nodes + i)]
   node_labels = merge(local.common_labels, {
     role = "node"
   })
@@ -25,7 +25,7 @@ resource "hcloud_placement_group" "nodes" {
 
 # Transform Butane to Ignition
 data "ct_config" "node" {
-  count  = var.node_count
+  count  = local.node_count
   strict = true
 
   content = templatefile("${path.module}/bootstrap/node.bu", {
@@ -40,7 +40,7 @@ data "ct_config" "node" {
 }
 
 resource "random_pet" "node_name" {
-  count     = var.node_count
+  count     = local.node_count
   length    = 2
   separator = "-"
 
@@ -54,7 +54,7 @@ resource "random_pet" "node_name" {
 
 # https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/node
 resource "hcloud_server" "node" {
-  count = var.node_count
+  count = local.node_count
 
   name        = random_pet.node_name[count.index].id
   image       = data.hcloud_image.coreos.id

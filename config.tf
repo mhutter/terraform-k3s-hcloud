@@ -19,12 +19,6 @@ variable "ip_offsets" {
   }
 }
 
-variable "node_count" {
-  description = "Number of worker nodes"
-  type        = number
-  default     = 1
-}
-
 locals {
   fallback_ssh_key = file("~/.ssh/id_ed25519.pub")
   ssh_key          = coalesce(var.ssh_key, local.fallback_ssh_key)
@@ -35,12 +29,16 @@ locals {
   env = {
     dev = {
       internal_network = "10.1.0.0/24"
+      node_count       = 1
     }
     prod = {
       internal_network = "10.0.0.0/24"
+      node_count       = 3
     }
   }
 
   // IP range for the internal network
   internal_network = local.env[terraform.workspace].internal_network
+  // Number of worker nodes
+  node_count = local.env[terraform.workspace].node_count
 }
