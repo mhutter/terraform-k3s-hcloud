@@ -39,7 +39,7 @@ kubeconfig:
 .PHONY: cilium
 cilium:  ## Install Cilium on the cluster
 	$(eval SERVER_INTERNAL_IP := $(shell terraform output -raw server_internal_ip))
-	cilium install --set operator.replicas=1 --set kubeProxyReplacement=true --set k8sServiceHost=$(SERVER_INTERNAL_IP) --set k8sServicePort=6443
+	cilium install --set operator.replicas=1 --set kubeProxyReplacement=true --set k8sServiceHost=$(SERVER_INTERNAL_IP) --set k8sServicePort=6443 --set 'ipam.operator.clusterPoolIPv4PodCIDRList={10.42.0.0/16}'
 
 .PHONY: clean
 clean:  ## Clean up generated files
