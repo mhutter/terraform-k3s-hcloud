@@ -5,18 +5,6 @@ locals {
   })
 }
 
-resource "hcloud_firewall" "node" {
-  name = "k3s-node"
-
-  rule {
-    direction  = "in"
-    protocol   = "icmp"
-    source_ips = var.admin_cidrs
-  }
-
-  labels = local.node_labels
-}
-
 resource "hcloud_placement_group" "nodes" {
   name   = "nodes"
   type   = "spread"
