@@ -1,4 +1,5 @@
-PLAN := terraform.tfplan
+TF := tofu
+PLAN := $(TF).tfplan
 KUBECONFIG := $(shell pwd)/.kubeconfig
 
 .PHONY: help
@@ -6,23 +7,23 @@ help: ## Show this help
 	@grep -E -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: fmt
-fmt:  ## Format all terraform code
-	terraform fmt -recursive .
+fmt:  ## Format all $(TF) code
+	$(TF) fmt -recursive .
 
 .PHONY: plan
 plan:  ## Create a plan
-	terraform plan -out=$(PLAN)
+	$(TF) plan -out=$(PLAN)
 
 .PHONY: apply
 apply:  ## Apply the plan
-	terraform apply $(PLAN)
+	$(TF) apply $(PLAN)
 
 .PHONY: lint
 lint: fmt validate yamllint  ## Run all linting
 
 .PHONY: validate
-validate:  ## Validate the terraform code
-	terraform validate
+validate:  ## Validate the $(TF) code
+	$(TF) validate
 
 .PHONY: yamllint
 yamllint:  ## Validate the Butane files
@@ -30,15 +31,15 @@ yamllint:  ## Validate the Butane files
 
 .PHONY: kubeconfig
 kubeconfig:
-	$(eval SERVER_IP := $(shell terraform output -raw server_ip))
-	$(eval SERVER_INTERNAL_IP := $(shell terraform output -raw server_internal_ip))
+	$(eval SERVER_IP := $(shell $(TF) output -raw server_ip))
+	$(eval SERVER_INTERNAL_IP := $(shell $(TF) output -raw server_internal_ip))
 	command ssh core@$(SERVER_IP) sudo cat /etc/rancher/k3s/k3s.yaml > $(KUBECONFIG)
 	sed -i 's/$(SERVER_INTERNAL_IP)/$(SERVER_IP)/g' $(KUBECONFIG)
 	sed -i 's/127.0.0.1/$(SERVER_IP)/g' $(KUBECONFIG)
 
 .PHONY: cilium
 cilium:  ## Install Cilium on the cluster
-	$(eval SERVER_INTERNAL_IP := $(shell terraform output -raw server_internal_ip))
+	$(eval SERVER_INTERNAL_IP := $(shell $(TF) output -raw server_internal_ip))
 	cilium install --set operator.replicas=1 --set kubeProxyReplacement=true --set k8sServiceHost=$(SERVER_INTERNAL_IP) --set k8sServicePort=6443 --set 'ipam.operator.clusterPoolIPv4PodCIDRList={10.42.0.0/16}'
 
 .PHONY: clean
