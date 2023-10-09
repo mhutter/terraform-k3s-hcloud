@@ -33,7 +33,6 @@ resource "random_pet" "node_name" {
   separator = "-"
 
   keepers = {
-    image_id        = data.hcloud_image.coreos.id
     user_data       = md5(data.ct_config.node[count.index].rendered)
     placement_group = hcloud_placement_group.nodes.id
     network         = hcloud_network.k3s.id
@@ -66,6 +65,7 @@ resource "hcloud_server" "node" {
 
   depends_on = [hcloud_network_subnet.k3s]
   lifecycle {
+    ignore_changes = [ image ]
     replace_triggered_by = [random_pet.node_name[count.index].id]
   }
 }

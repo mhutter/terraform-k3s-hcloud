@@ -46,7 +46,6 @@ data "ct_config" "server" {
 # https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/server
 resource "hcloud_server" "server" {
   name        = "k3s-server"
-  image       = data.hcloud_image.coreos.id
   server_type = "cax11"
   location    = "fsn1"
   ssh_keys    = data.hcloud_ssh_keys.all.*.id
@@ -64,4 +63,7 @@ resource "hcloud_server" "server" {
 
   labels     = local.server_labels
   depends_on = [hcloud_network_subnet.k3s]
+  lifecycle {
+    ignore_changes = [ image ]
+  }
 }
