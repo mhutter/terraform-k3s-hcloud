@@ -33,7 +33,8 @@ export AWS_SECRET_ACCESS_KEY=''
 export AWS_S3_ENDPOINT=''
 
 # Provider config
-export HCLOUD_TOKEN=''
+export TF_VAR_hcloud_token_dev=''
+export TF_VAR_hcloud_token_prod=''
 ```
 
 And then, `make` all the things:
