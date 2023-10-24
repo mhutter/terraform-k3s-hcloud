@@ -28,6 +28,7 @@ variable "ip_offsets" {
   type        = map(number)
   default = {
     server = 2
+    lb     = 3
     nodes  = 10
   }
 }
