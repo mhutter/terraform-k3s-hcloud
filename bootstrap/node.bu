@@ -14,29 +14,6 @@ storage:
           [updates]
           strategy = "periodic"
 
-    # Manually configure networking
-    - path: /etc/NetworkManager/system-connections/internal.nmconnection
-      overwrite: true
-      contents:
-        inline: |
-          [connection]
-          id=internal
-          type=ethernet
-          autoconnect-priority=-999
-          interface-name=enp7s0
-
-          [ipv4]
-          method=manual
-          address1=${node_ip}/24,${gateway_ip}
-
-    # Manually configure Hetzner DNS servers
-    # Since we don't have public IPv4 addresses, we won't get them via DHCP
-    - path: /etc/systemd/resolved.conf.d/dns.conf
-      contents:
-        inline: |
-          [Resolve]
-          DNS=185.12.64.2 185.12.64.1
-
     # K3s config
     - path: /etc/rancher/k3s/config.yaml
       contents:

@@ -9,7 +9,7 @@ locals {
 # SSH public key
 data "hcloud_ssh_keys" "all" {}
 
-data "hcloud_image" "coreos" {
+data "hcloud_image" "arm" {
   most_recent       = true
   with_architecture = "arm"
   with_selector     = "os-flavor=coreos"
@@ -27,12 +27,6 @@ resource "hcloud_network_subnet" "k3s" {
   network_zone = "eu-central"
   ip_range     = local.internal_network
   type         = "cloud"
-}
-
-resource "hcloud_network_route" "gateway" {
-  network_id  = hcloud_network.k3s.id
-  destination = "0.0.0.0/0"
-  gateway     = local.server_ip
 }
 
 resource "random_password" "agent_token" {

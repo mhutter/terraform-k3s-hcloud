@@ -10,6 +10,32 @@ resource "hcloud_placement_group" "nodes" {
   type   = "spread"
   labels = local.node_labels
 }
+resource "hcloud_firewall" "nodes" {
+  name = "k3s-nodes"
+
+  rule {
+    direction  = "in"
+    protocol   = "icmp"
+    source_ips = var.admin_cidrs
+  }
+
+  rule {
+    description = "HTTP"
+    direction   = "in"
+    protocol    = "tcp"
+    port        = "80"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+  }
+  rule {
+    description = "HTTPS"
+    direction   = "in"
+    protocol    = "tcp"
+    port        = "443"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+  }
+
+  labels = local.node_labels
+}
 
 # Transform Butane to Ignition
 data "ct_config" "node" {
@@ -44,7 +70,7 @@ resource "hcloud_server" "node" {
   count = local.node_count
 
   name        = random_pet.node_name[count.index].id
-  image       = data.hcloud_image.coreos.id
+  image       = data.hcloud_image.arm.id
   server_type = "cax11"
   location    = "fsn1"
   ssh_keys    = data.hcloud_ssh_keys.all.*.id
@@ -52,11 +78,7 @@ resource "hcloud_server" "node" {
   labels      = local.node_labels
 
   placement_group_id = hcloud_placement_group.nodes.id
-
-  public_net {
-    ipv4_enabled = false
-    ipv6_enabled = false
-  }
+  firewall_ids       = [hcloud_firewall.nodes.id]
 
   network {
     network_id = hcloud_network.k3s.id
@@ -65,7 +87,7 @@ resource "hcloud_server" "node" {
 
   depends_on = [hcloud_network_subnet.k3s]
   lifecycle {
-    ignore_changes = [ image ]
+    ignore_changes       = [image]
     replace_triggered_by = [random_pet.node_name[count.index].id]
   }
 }

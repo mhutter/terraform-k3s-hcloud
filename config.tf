@@ -1,13 +1,13 @@
 # Provider configuration per env
 variable "hcloud_token_dev" {
-  default = ""
-  sensitive =  true
-  type = string
+  default   = ""
+  sensitive = true
+  type      = string
 }
 variable "hcloud_token_prod" {
-  default = ""
-  sensitive =  true
-  type = string
+  default   = ""
+  sensitive = true
+  type      = string
 }
 
 # Global configuration

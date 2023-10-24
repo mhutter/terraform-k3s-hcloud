@@ -3,6 +3,7 @@ version: 1.5.0
 
 storage:
   files:
+    # K3s-common RPM repo
     - path: /etc/yum.repos.d/rancher-k3s-common.repo
       mode: 0644
       contents:
@@ -15,20 +16,13 @@ storage:
           repo_gpgcheck=0
           gpgkey=https://rpm.rancher.io/public.key
 
-    # Done via systemd as the network may not yet be ready when ignition tries
-    # to create files
-    - path: /usr/local/sbin/install-k3s.sh
+    # Install K3s
+    - path: /usr/local/bin/k3s
       mode: 0755
       contents:
-        inline: |
-          #!/bin/sh
-          set -e
-          URL='https://github.com/k3s-io/k3s/releases/download/v1.28.2%2Bk3s1/k3s-arm64'
-          echo "Downloading $URL"
-          curl -L -o /tmp/k3s "$URL"
-          echo "4b0c00032ee92d6e27f623c99c990d5fa1295352b2dc88f1c6f7ea24be091779  /tmp/k3s" | sha256sum -c -
-          install -v -m 755 /tmp/k3s /usr/local/bin/k3s
-          rm -v /tmp/k3s
+        source: 'https://github.com/k3s-io/k3s/releases/download/v1.28.2%2Bk3s1/k3s-arm64'
+        verification:
+          hash: sha256-4b0c00032ee92d6e27f623c99c990d5fa1295352b2dc88f1c6f7ea24be091779
 
     # Kubelet config
     - path: /etc/rancher/k3s/kubelet.config
@@ -42,8 +36,8 @@ storage:
 
 systemd:
   units:
-    # Install K3s and deps
-    - name: rpm-ostree-install-k3s.service
+    # Install K3s deps
+    - name: rpm-ostree-install-k3s-deps.service
       enabled: true
       contents: |
         [Unit]
@@ -57,7 +51,6 @@ systemd:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/usr/local/sbin/install-k3s.sh
         ExecStart=rpm-ostree install --apply-live --allow-inactive --assumeyes k3s-selinux
 
         [Install]
