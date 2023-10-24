@@ -5,7 +5,7 @@ Deploy a K3s cluster on Hetzner cloud.
 ## Features
 
 - Single control plane "server"
-- All cluster traffic via internal network; only the "server" has a public IP (and acts as a NAT gateway)
+- All cluster traffic via internal network
 - Automated installation of K3s on all systems
 - Cluster bootstrapping
 - Nodes automatically join the cluster
@@ -37,17 +37,24 @@ export TF_VAR_hcloud_token_dev=''
 export TF_VAR_hcloud_token_prod=''
 ```
 
-And then, `make` all the things:
+Set up OpenTofu:
 
 ```sh
-make plan
-make apply
+tofu init
+tofu workspace select dev  # or `prod`
+```
+
+And then, `just` do all the things:
+
+```sh
+just plan
+just apply
 
 # wait a minute until K3s is installed & ready
-make kubeconfig
+just kubeconfig
 # (repeat if failed)
 
-make cilium
+just install-cilium
 ```
 
 And that should result in a K3s cluster with three nodes, ready to go!
