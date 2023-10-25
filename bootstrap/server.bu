@@ -10,6 +10,9 @@ storage:
           kubelet-arg: "config=/etc/rancher/k3s/kubelet.config"
           agent-token: "${agent_token}"
 
+          # Enable additional admission plugins
+          kube-apiserver-arg: "enable-admission-plugins=PodTolerationRestriction"
+
           # Server configuration
           advertise-address: "${node_ip}"
           node-ip: "${node_ip}"
