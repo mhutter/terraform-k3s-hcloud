@@ -2,18 +2,6 @@ variant: fcos
 version: 1.5.0
 storage:
   files:
-    # FIXME: This just crashes zincati
-    # Configure Zincati update strategy
-    # see: https://coreos.github.io/zincati/usage/updates-strategy/
-    # Choose "periodic" strategy but don't define any window, to completely
-    # prevent reboots triggered by Zincati. Instead we will later use kured or
-    # similar to orchestrate reboots
-    - path: /etc/zincati/config.d/55-update-strategy.toml
-      contents:
-        inline: |
-          [updates]
-          strategy = "periodic"
-
     # K3s config
     - path: /etc/rancher/k3s/config.yaml
       contents:
