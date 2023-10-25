@@ -8,12 +8,12 @@ storage:
       wipe_table: false
       partitions:
         - number: 1
-          label: k3s-server
+          label: k3s-controller
           size_mib: 0
           wipe_partition_entry: true  # if it does not exist
           resize: true
   filesystems:
-    - device: /dev/disk/by-partlabel/k3s-server
+    - device: /dev/disk/by-partlabel/k3s-controller
       path: /var/lib/rancher/k3s
       format: xfs
       with_mount_unit: true
@@ -30,8 +30,8 @@ storage:
           kube-apiserver-arg: "enable-admission-plugins=PodTolerationRestriction"
 
           # Server configuration
-          advertise-address: "${server_ip}"
-          node-ip: "${server_ip}"
+          advertise-address: "${controller_ip}"
+          node-ip: "${controller_ip}"
           node-taint: "node-role.kubernetes.io/control-plane:NoSchedule"
 
           # Cluster configuration

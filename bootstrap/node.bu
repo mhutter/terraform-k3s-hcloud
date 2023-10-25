@@ -6,7 +6,7 @@ storage:
     - path: /etc/rancher/k3s/config.yaml
       contents:
         inline: |
-          server: "https://${server_ip}:6443"
+          server: "https://${controller_ip}:6443"
           token: "${token}"
           kubelet-arg: "config=/etc/rancher/k3s/kubelet.config"
 

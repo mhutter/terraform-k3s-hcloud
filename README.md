@@ -4,7 +4,7 @@ Deploy a K3s cluster on Hetzner cloud.
 
 ## Features
 
-- Single control plane "server"
+- Single control plane "controller"
 - All cluster traffic via internal network
 - Automated installation of K3s on all systems
 - Cluster bootstrapping
@@ -27,7 +27,7 @@ For configuration, set
 ```sh
 export KUBECONFIG="${PWD}/.kubeconfig"
 
-# Used for SSH & Kubernetes API access to the server
+# Used for SSH & Kubernetes API access to the controller
 export TF_VAR_admin_cidrs='["1.2.3.4/32"]'
 
 # Terraform State
@@ -65,9 +65,9 @@ And that should result in a K3s cluster with three nodes, ready to go!
 
 ## Day two operations
 
-### Replacing the server
+### Replacing the controller
 
-The Server can just be replaced at any time. All data is persisted onto an external disk. To be on the safe side, stop the `k3s` service on the server before shutting it down.
+The Controller can just be replaced at any time. All data is persisted onto an external disk. To be on the safe side, stop the `k3s` service on the Controller before shutting it down.
 
 
 ### Replacing a node

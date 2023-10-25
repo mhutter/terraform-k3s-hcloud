@@ -27,9 +27,9 @@ data "ct_config" "node" {
   strict = true
 
   content = templatefile("${path.module}/bootstrap/node.bu", {
-    gateway_ip = cidrhost(hcloud_network_subnet.k3s.ip_range, 1)
-    server_ip  = local.server_ip
-    token      = random_password.agent_token.result
+    gateway_ip    = cidrhost(hcloud_network_subnet.k3s.ip_range, 1)
+    controller_ip = local.controller_ip
+    token         = random_password.agent_token.result
   })
   snippets = [templatefile("${path.module}/bootstrap/common.bu", {
     role = "agent"

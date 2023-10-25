@@ -12,7 +12,7 @@ variable "hcloud_token_prod" {
 
 # Global configuration
 variable "ssh_key" {
-  description = "SSH public key to be used for all servers"
+  description = "SSH public key to be used for all controllers"
   type        = string
   default     = ""
 }
@@ -24,10 +24,10 @@ variable "admin_cidrs" {
 }
 
 variable "ip_offsets" {
-  description = "Offsets for the IP addresses of the servers and nodes"
+  description = "Offsets for the IP addresses of the controllers and nodes"
   type        = map(number)
   default = {
-    server = 200
+    controller = 200
   }
 }
 
@@ -36,7 +36,7 @@ locals {
   ssh_key          = coalesce(var.ssh_key, local.fallback_ssh_key)
 
   # Networking
-  server_ip = cidrhost(hcloud_network_subnet.k3s.ip_range, var.ip_offsets.server)
+  controller_ip = cidrhost(hcloud_network_subnet.k3s.ip_range, var.ip_offsets.controller)
 
   env = {
     dev = {

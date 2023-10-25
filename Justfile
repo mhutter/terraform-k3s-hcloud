@@ -28,21 +28,21 @@ yamllint:
 kubeconfig:
 	#!/usr/bin/env bash
 	set -euxo pipefail
-	server_ip="$({{tf}} output -raw server_ip)"
-	server_internal_ip="$({{tf}} output -raw server_internal_ip)"
-	command ssh "core@${server_ip}" sudo cat /etc/rancher/k3s/k3s.yaml > "${KUBECONFIG}"
-	sed -i "s/${server_internal_ip}/${server_ip}/g" "${KUBECONFIG}"
-	sed -i "s/127.0.0.1/${server_ip}/g" "${KUBECONFIG}"
+	controller_ip="$({{tf}} output -raw controller_ip)"
+	controller_internal_ip="$({{tf}} output -raw controller_internal_ip)"
+	command ssh "core@${controller_ip}" sudo cat /etc/rancher/k3s/k3s.yaml > "${KUBECONFIG}"
+	sed -i "s/${controller_internal_ip}/${controller_ip}/g" "${KUBECONFIG}"
+	sed -i "s/127.0.0.1/${controller_ip}/g" "${KUBECONFIG}"
 
 # Install Cilium on the cluster
 install-cilium:
 	#!/usr/bin/env bash
 	set -euxo pipefail
-	server_internal_ip="$({{tf}} output -raw server_internal_ip)"
+	controller_internal_ip="$({{tf}} output -raw controller_internal_ip)"
 	cilium install \
 		--set operator.replicas=1 \
 		--set kubeProxyReplacement=true \
-		--set "k8sServiceHost=${server_internal_ip}" \
+		--set "k8sServiceHost=${controller_internal_ip}" \
 		--set k8sServicePort=6443 \
 		--set 'ipam.operator.clusterPoolIPv4PodCIDRList={10.42.0.0/16}'
 
