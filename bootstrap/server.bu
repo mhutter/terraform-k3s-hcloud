@@ -2,6 +2,22 @@ variant: fcos
 version: 1.5.0
 
 storage:
+  # Format & mount the data disk
+  disks:
+    - device: "/dev/disk/by-id/scsi-0HC_Volume_${volume_id}"
+      wipe_table: false
+      partitions:
+        - number: 1
+          label: k3s-server
+          size_mib: 0
+          wipe_partition_entry: true  # if it does not exist
+          resize: true
+  filesystems:
+    - device: /dev/disk/by-partlabel/k3s-server
+      path: /var/lib/rancher/k3s
+      format: xfs
+      with_mount_unit: true
+
   files:
     - path: /etc/rancher/k3s/config.yaml
       mode: 0600

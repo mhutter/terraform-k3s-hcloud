@@ -73,6 +73,7 @@ systemd:
         Description=Run K3s
         Wants=network-online.target
         After=network-online.target
+        After=var-lib-rancher-k3s.mount
 
         [Service]
         Type=notify

@@ -30,6 +30,14 @@ resource "hcloud_firewall" "server" {
   labels = local.server_labels
 }
 
+resource "hcloud_volume" "server" {
+  name     = "k3s-server-data"
+  size     = 10
+  location = "fsn1"
+
+  labels = local.server_labels
+}
+
 # Transform Butane to Ignition
 data "ct_config" "server" {
   strict = true
@@ -37,6 +45,7 @@ data "ct_config" "server" {
     agent_token = random_password.agent_token.result
     ip_range    = hcloud_network_subnet.k3s.ip_range
     node_ip     = local.server_ip
+    volume_id   = hcloud_volume.server.id
   })
   snippets = [templatefile("${path.module}/bootstrap/common.bu", {
     role = "server"
@@ -63,4 +72,8 @@ resource "hcloud_server" "server" {
   lifecycle {
     ignore_changes = [image]
   }
+}
+resource "hcloud_volume_attachment" "server" {
+  server_id = hcloud_server.server.id
+  volume_id = hcloud_volume.server.id
 }
