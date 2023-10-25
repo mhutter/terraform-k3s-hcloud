@@ -13,11 +13,11 @@ Deploy a K3s cluster on Hetzner cloud.
 
 ## Backlog
 
-- [x] Configure Fleetlock
-- [x] Move Server Data to persistent disk
-- [ ] Remove Ports 80+443 from Nodes -> LB
 - [ ] Configure node flavors
 - [ ] Support x86 nodes
+- [x] Configure Fleetlock
+- [x] Move Server Data to persistent disk
+- [x] Remove Ports 80+443 from Nodes -> LB
 
 
 ## Setup

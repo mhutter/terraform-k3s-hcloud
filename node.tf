@@ -18,21 +18,6 @@ resource "hcloud_firewall" "nodes" {
     source_ips = var.admin_cidrs
   }
 
-  rule {
-    description = "HTTP"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "80"
-    source_ips  = ["0.0.0.0/0", "::/0"]
-  }
-  rule {
-    description = "HTTPS"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "443"
-    source_ips  = ["0.0.0.0/0", "::/0"]
-  }
-
   labels = local.node_labels
 }
 
