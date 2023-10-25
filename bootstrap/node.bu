@@ -6,7 +6,30 @@ storage:
     - path: /etc/rancher/k3s/config.yaml
       contents:
         inline: |
-          server: "https://${server}:6443"
+          server: "https://${server_ip}:6443"
           token: "${token}"
           kubelet-arg: "config=/etc/rancher/k3s/kubelet.config"
-          node-ip: "${node_ip}"
+
+systemd:
+  units:
+    - name: k3s-cfg-node-ip.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Configure K3s Node IP
+        Wants=network-online.target
+        After=network-online.target
+        After=sys-subsystem-net-devices-enp7s0.device
+        BindsTo=sys-subsystem-net-devices-enp7s0.device
+        Before=k3s.service
+        ConditionPathExists=|!/etc/rancher/k3s/config.yaml.d/node-ip.yaml
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/ping -c 1 -w 3600 -n ${gateway_ip}
+        ExecStartPre=-mkdir -p /etc/rancher/k3s/config.yaml.d/
+        ExecStart=/bin/sh -c 'echo "node-ip:" $(ip -4 -j a show dev enp7s0 | jq "[.[0].addr_info[].local]") > /etc/rancher/k3s/config.yaml.d/node-ip.yaml'
+
+        [Install]
+        WantedBy=multi-user.target

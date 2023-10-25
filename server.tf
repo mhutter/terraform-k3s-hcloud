@@ -44,7 +44,7 @@ data "ct_config" "server" {
   content = templatefile("${path.module}/bootstrap/server.bu", {
     agent_token = random_password.agent_token.result
     ip_range    = hcloud_network_subnet.k3s.ip_range
-    node_ip     = local.server_ip
+    server_ip   = local.server_ip
     volume_id   = hcloud_volume.server.id
   })
   snippets = [templatefile("${path.module}/bootstrap/common.bu", {

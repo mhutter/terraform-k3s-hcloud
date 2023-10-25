@@ -1,5 +1,4 @@
 locals {
-  node_ips = [for i in range(local.node_count) : cidrhost(hcloud_network_subnet.k3s.ip_range, var.ip_offsets.nodes + i)]
   node_labels = merge(local.common_labels, {
     role = "node"
   })
@@ -44,8 +43,7 @@ data "ct_config" "node" {
 
   content = templatefile("${path.module}/bootstrap/node.bu", {
     gateway_ip = cidrhost(hcloud_network_subnet.k3s.ip_range, 1)
-    node_ip    = local.node_ips[count.index]
-    server     = local.server_ip
+    server_ip  = local.server_ip
     token      = random_password.agent_token.result
   })
   snippets = [templatefile("${path.module}/bootstrap/common.bu", {
@@ -82,7 +80,6 @@ resource "hcloud_server" "node" {
 
   network {
     network_id = hcloud_network.k3s.id
-    ip         = local.node_ips[count.index]
   }
 
   depends_on = [hcloud_network_subnet.k3s]
@@ -101,7 +98,6 @@ resource "hcloud_load_balancer" "ingress" {
 resource "hcloud_load_balancer_network" "ingress" {
   load_balancer_id = hcloud_load_balancer.ingress.id
   network_id       = hcloud_network.k3s.id
-  ip               = cidrhost(hcloud_network_subnet.k3s.ip_range, var.ip_offsets.lb)
 }
 resource "hcloud_load_balancer_service" "ingress" {
   for_each = {
