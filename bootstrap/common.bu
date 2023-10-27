@@ -10,7 +10,7 @@ storage:
           [updates]
           strategy = "fleet_lock"
           [updates.fleet_lock]
-          base_url = "http://10.43.0.15/"
+          base_url = "${fleetlock_url}"
 
     # K3s-common RPM repo
     - path: /etc/yum.repos.d/rancher-k3s-common.repo

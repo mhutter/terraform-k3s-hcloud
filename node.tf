@@ -32,7 +32,8 @@ data "ct_config" "node" {
     token         = random_password.agent_token.result
   })
   snippets = [templatefile("${path.module}/bootstrap/common.bu", {
-    role = "agent"
+    fleetlock_url = var.fleetlock_url
+    role          = "agent"
   })]
 }
 

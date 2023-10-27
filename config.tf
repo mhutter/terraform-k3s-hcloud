@@ -31,6 +31,12 @@ variable "ip_offsets" {
   }
 }
 
+variable "fleetlock_url" {
+  description = "IP under which fleetlock will be available"
+  type        = string
+  default     = "http://10.43.0.15/"
+}
+
 locals {
   fallback_ssh_key = file("~/.ssh/id_ed25519.pub")
   ssh_key          = coalesce(var.ssh_key, local.fallback_ssh_key)

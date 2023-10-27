@@ -2,22 +2,26 @@
 
 Deploy a K3s cluster on Hetzner cloud.
 
+
 ## Features
 
-- Single control plane "controller"
+- Single control plane "controller" (or "server" in K3s lingo)
 - All cluster traffic via internal network
 - Automated installation of K3s on all systems
 - Cluster bootstrapping
 - Nodes automatically join the cluster
+- Controller & Nodes can be replace
+
+
+### Non-Goals
+
+- HA control plane
 
 
 ## Backlog
 
 - [ ] Configure node flavors
 - [ ] Support x86 nodes
-- [x] Configure Fleetlock
-- [x] Move Server Data to persistent disk
-- [x] Remove Ports 80+443 from Nodes -> LB
 
 
 ## Setup
@@ -61,6 +65,9 @@ just install-cilium
 ```
 
 And that should result in a K3s cluster with three nodes, ready to go!
+
+
+NOTE: The CoreOS autoupdater expects [poseidon/fleetlock](https://github.com/poseidon/fleetlock) to run on the cluster, using `10.43.0.15` as the Service IP (configure via `fleetlock_url` TF var).
 
 
 ## Day two operations

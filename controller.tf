@@ -48,6 +48,7 @@ data "ct_config" "controller" {
     volume_id     = hcloud_volume.controller.id
   })
   snippets = [templatefile("${path.module}/bootstrap/common.bu", {
+    fleetlock_url = var.fleetlock_url
     # IMPORTANT: K3s role!
     role = "server"
   })]
