@@ -4,6 +4,17 @@ locals {
     source     = "github.com_mhutter_terraform-hcloud-k3s"
     env        = terraform.workspace
   }
+
+  common_butane_snippet = templatefile("${path.module}/bootstrap/common.bu", {
+    fleetlock_url = var.fleetlock_url
+    registry_config = yamlencode({
+      mirrors = {
+        for registry, mirror in var.registry_mirrors : registry => {
+          "endpoint" = [mirror]
+        }
+      }
+    }),
+  })
 }
 
 # SSH public key

@@ -47,11 +47,10 @@ data "ct_config" "controller" {
     controller_ip = local.controller_ip
     volume_id     = hcloud_volume.controller.id
   })
-  snippets = [templatefile("${path.module}/bootstrap/common.bu", {
-    fleetlock_url = var.fleetlock_url
-    # IMPORTANT: K3s role!
-    role = "server"
-  })]
+  snippets = [
+    local.common_butane_snippet,
+    templatefile("${path.module}/bootstrap/role.bu", { k3s_role = "server" }),
+  ]
 }
 
 # https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/controller

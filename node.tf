@@ -31,10 +31,10 @@ data "ct_config" "node" {
     controller_ip = local.controller_ip
     token         = random_password.agent_token.result
   })
-  snippets = [templatefile("${path.module}/bootstrap/common.bu", {
-    fleetlock_url = var.fleetlock_url
-    role          = "agent"
-  })]
+  snippets = [
+    local.common_butane_snippet,
+    templatefile("${path.module}/bootstrap/role.bu", { k3s_role = "agent" }),
+  ]
 }
 
 resource "random_pet" "node_name" {

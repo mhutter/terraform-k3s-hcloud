@@ -43,6 +43,13 @@ storage:
           shutdownGracePeriod: 60s
           shutdownGracePeriodCriticalPods: 10s
 
+    # Registry config
+    - path: /etc/rancher/k3s/registries.yaml
+      mode: 0644
+      contents:
+        inline: |
+          ${indent(10, registry_config)}
+
 systemd:
   units:
     # Install K3s deps
@@ -61,37 +68,6 @@ systemd:
         Type=oneshot
         RemainAfterExit=yes
         ExecStart=rpm-ostree install --apply-live --allow-inactive --assumeyes k3s-selinux
-
-        [Install]
-        WantedBy=multi-user.target
-
-    # Start K3s
-    - name: k3s.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Run K3s
-        Wants=network-online.target
-        After=network-online.target
-        After=var-lib-rancher-k3s.mount
-
-        [Service]
-        Type=notify
-        EnvironmentFile=-/etc/default/%N
-        EnvironmentFile=-/etc/sysconfig/%N
-        EnvironmentFile=-/etc/systemd/system/%N.env
-        KillMode=process
-        Delegate=yes
-        LimitNOFILE=1048576
-        LimitNPROC=infinity
-        LimitCORE=infinity
-        TasksMax=infinity
-        TimeoutStartSec=0
-        Restart=always
-        RestartSec=5s
-        ExecStartPre=-/sbin/modprobe br_netfilter
-        ExecStartPre=-/sbin/modprobe overlay
-        ExecStart=/usr/local/bin/k3s ${role}
 
         [Install]
         WantedBy=multi-user.target
