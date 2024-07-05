@@ -43,13 +43,15 @@ resource "random_pet" "node_name" {
   separator = "-"
 
   keepers = {
-    user_data       = md5(data.ct_config.node[count.index].rendered)
     placement_group = hcloud_placement_group.nodes.id
     network         = hcloud_network.k3s.id
   }
+
+  lifecycle {
+    ignore_changes = [ keepers ]
+  }
 }
 
-# https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/node
 resource "hcloud_server" "node" {
   count = local.node_count
 
@@ -70,7 +72,7 @@ resource "hcloud_server" "node" {
 
   depends_on = [hcloud_network_subnet.k3s]
   lifecycle {
-    ignore_changes       = [image, network]
+    ignore_changes       = [image, network, user_data, ssh_keys]
     replace_triggered_by = [random_pet.node_name[count.index].id]
   }
 }

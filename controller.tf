@@ -53,7 +53,6 @@ data "ct_config" "controller" {
   ]
 }
 
-# https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/controller
 resource "hcloud_server" "controller" {
   name        = "k3s-controller"
   image       = data.hcloud_image.arm.id
@@ -71,9 +70,10 @@ resource "hcloud_server" "controller" {
   labels     = local.controller_labels
   depends_on = [hcloud_network_subnet.k3s]
   lifecycle {
-    ignore_changes = [image]
+    ignore_changes = [image, user_data, ssh_keys]
   }
 }
+
 resource "hcloud_volume_attachment" "controller" {
   server_id = hcloud_server.controller.id
   volume_id = hcloud_volume.controller.id
