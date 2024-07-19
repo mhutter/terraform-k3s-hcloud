@@ -29,9 +29,9 @@ storage:
     - path: /usr/local/bin/k3s
       mode: 0755
       contents:
-        source: 'https://github.com/k3s-io/k3s/releases/download/v1.28.2%2Bk3s1/k3s-arm64'
+        source: 'https://github.com/k3s-io/k3s/releases/download/v1.30.2%2Bk3s2/k3s-arm64'
         verification:
-          hash: sha256-4b0c00032ee92d6e27f623c99c990d5fa1295352b2dc88f1c6f7ea24be091779
+          hash: sha256-759822eab4b92e5a36950e94b5810255c0cc145098393a7ea4b695ecef171857
 
     # Kubelet config
     - path: /etc/rancher/k3s/kubelet.config
