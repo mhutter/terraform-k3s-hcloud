@@ -72,7 +72,7 @@ resource "hcloud_server" "node" {
 
   depends_on = [hcloud_network_subnet.k3s]
   lifecycle {
-    ignore_changes       = [image, network, user_data, ssh_keys]
+    ignore_changes       = [network]
     replace_triggered_by = [random_pet.node_name[count.index].id]
   }
 }
