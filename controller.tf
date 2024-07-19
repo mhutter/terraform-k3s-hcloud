@@ -35,6 +35,8 @@ resource "hcloud_volume" "controller" {
   size     = 10
   location = "fsn1"
 
+  delete_protection = true
+
   labels = local.controller_labels
 }
 
