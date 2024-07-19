@@ -58,7 +58,7 @@ resource "hcloud_server" "controller" {
   image       = data.hcloud_image.arm.id
   server_type = "cax11"
   location    = "fsn1"
-  ssh_keys    = data.hcloud_ssh_keys.all.*.id
+  ssh_keys    = [hcloud_ssh_key.k3s.id]
   user_data   = data.ct_config.controller.rendered
 
   network {

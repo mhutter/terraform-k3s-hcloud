@@ -18,7 +18,10 @@ locals {
 }
 
 # SSH public key
-data "hcloud_ssh_keys" "all" {}
+resource "hcloud_ssh_key" "k3s" {
+  name       = "k3s"
+  public_key = local.ssh_key
+}
 
 data "hcloud_image" "arm" {
   most_recent       = true
