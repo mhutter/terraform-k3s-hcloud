@@ -10,7 +10,7 @@ storage:
           [updates]
           strategy = "fleet_lock"
           [updates.fleet_lock]
-          base_url = "${fleetlock_url}"
+          base_url = "http://${fleetlock_host}"
 
     # K3s-common RPM repo
     - path: /etc/yum.repos.d/rancher-k3s-common.repo
@@ -71,3 +71,10 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+
+    - name: zincati.service
+      dropins:
+        - name: wait-for-fleetlock.conf
+          contents: |
+            [Service]
+            ExecStartPre=ping -c 1 -w 600 ${fleetlock_host}

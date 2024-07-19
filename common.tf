@@ -6,7 +6,7 @@ locals {
   }
 
   common_butane_snippet = templatefile("${path.module}/bootstrap/common.bu", {
-    fleetlock_url = var.fleetlock_url
+    fleetlock_host = var.fleetlock_host
     registry_config = yamlencode({
       mirrors = {
         for registry, mirror in var.registry_mirrors : registry => {

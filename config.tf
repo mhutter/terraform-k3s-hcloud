@@ -32,10 +32,10 @@ variable "ip_offsets" {
 }
 
 # Cluster Configuration
-variable "fleetlock_url" {
-  description = "IP under which fleetlock will be available"
+variable "fleetlock_host" {
+  description = "IP or hostname under which fleetlock will be available"
   type        = string
-  default     = "http://10.43.0.15/"
+  default     = "10.43.0.15"
 }
 
 variable "registry_mirrors" {
