@@ -48,6 +48,12 @@ storage:
           disable-kube-proxy: true
           disable: [servicelb, traefik, local-storage]
 
+          # Ensure K8s components can be monitored
+          kube-controller-manager-arg:
+            - "bind-address=0.0.0.0"
+          kube-scheduler-arg:
+            - "bind-address=0.0.0.0"
+
 systemd:
   units:
     - name: k3s-cfg-tls-san.service
