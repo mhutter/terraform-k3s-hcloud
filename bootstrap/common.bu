@@ -77,4 +77,4 @@ systemd:
         - name: wait-for-fleetlock.conf
           contents: |
             [Service]
-            ExecStartPre=ping -c 1 -w 600 ${fleetlock_host}
+            ExecStartPre=/bin/bash -c '(while ! curl -f -o /dev/null -s -m 1 "http://${fleetlock_host}/-/healthy"; do echo "Waiting for fleetlock ..."; sleep 1; done); sleep 1'
