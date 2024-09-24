@@ -71,6 +71,9 @@ resource "hcloud_server" "controller" {
 
   labels     = local.controller_labels
   depends_on = [hcloud_network_subnet.k3s]
+  lifecycle {
+    ignore_changes = [image]
+  }
 }
 
 resource "hcloud_volume_attachment" "controller" {
